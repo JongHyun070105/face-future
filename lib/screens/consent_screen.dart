@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../config/app_theme.dart';
+import '../config/app_strings.dart';
+import '../widgets/common_widgets.dart';
 import 'loading_screen.dart';
 
 /// 개인정보 동의 화면
@@ -19,42 +21,11 @@ class _ConsentScreenState extends State<ConsentScreen> {
   bool _isAgreed = false;
   final ImagePicker _picker = ImagePicker();
 
-  Future<void> _showImageSourceDialog() async {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: const Color(AppTheme.surfaceColor),
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              leading: const Icon(Icons.camera_alt, color: Colors.white),
-              title: const Text(
-                '카메라로 촬영',
-                style: TextStyle(color: Colors.white),
-              ),
-              onTap: () {
-                Navigator.pop(context);
-                _pickImage(ImageSource.camera);
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.photo_library, color: Colors.white),
-              title: const Text(
-                '갤러리에서 선택',
-                style: TextStyle(color: Colors.white),
-              ),
-              onTap: () {
-                Navigator.pop(context);
-                _pickImage(ImageSource.gallery);
-              },
-            ),
-          ],
-        ),
-      ),
+  void _showImageSourceDialog() {
+    ImageSourceBottomSheet.show(
+      context,
+      onCameraTap: () => _pickImage(ImageSource.camera),
+      onGalleryTap: () => _pickImage(ImageSource.gallery),
     );
   }
 
@@ -68,7 +39,6 @@ class _ConsentScreenState extends State<ConsentScreen> {
       );
 
       if (image != null && mounted) {
-        // 동의 상태 저장
         final prefs = await SharedPreferences.getInstance();
         await prefs.setBool('hasConsented', true);
 
@@ -84,9 +54,11 @@ class _ConsentScreenState extends State<ConsentScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
+        AppSnackBar.show(
           context,
-        ).showSnackBar(const SnackBar(content: Text('이미지를 불러오는데 실패했습니다.')));
+          message: AppStrings.imageLoadFailed,
+          isSuccess: false,
+        );
       }
     }
   }

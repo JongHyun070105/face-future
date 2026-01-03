@@ -4,6 +4,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../config/app_config.dart';
 import '../config/app_theme.dart';
+import '../widgets/common_widgets.dart';
 import 'consent_screen.dart';
 import 'loading_screen.dart';
 
@@ -169,41 +170,10 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   void _showImageSourceDialog() {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: const Color(AppTheme.surfaceColor),
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              leading: const Icon(Icons.camera_alt, color: Colors.white),
-              title: const Text(
-                '카메라로 촬영',
-                style: TextStyle(color: Colors.white),
-              ),
-              onTap: () {
-                Navigator.pop(context);
-                _pickImage(ImageSource.camera);
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.photo_library, color: Colors.white),
-              title: const Text(
-                '갤러리에서 선택',
-                style: TextStyle(color: Colors.white),
-              ),
-              onTap: () {
-                Navigator.pop(context);
-                _pickImage(ImageSource.gallery);
-              },
-            ),
-          ],
-        ),
-      ),
+    ImageSourceBottomSheet.show(
+      context,
+      onCameraTap: () => _pickImage(ImageSource.camera),
+      onGalleryTap: () => _pickImage(ImageSource.gallery),
     );
   }
 
