@@ -5,8 +5,8 @@ import 'package:path_provider/path_provider.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:screenshot/screenshot.dart';
 
-/// 이미지 저장 서비스
-class StorageService {
+/// 로컬 스토리지 데이터소스
+class LocalStorageDataSource {
   final ScreenshotController screenshotController = ScreenshotController();
 
   /// 위젯을 캡처해서 갤러리에 저장

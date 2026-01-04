@@ -2,9 +2,9 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:math';
 import 'package:flutter/material.dart';
-import '../config/app_theme.dart';
-import '../services/gemini_service.dart';
-import '../services/storage_service.dart';
+import '../../core/config/app_theme.dart';
+import '../../core/di/injection_container.dart';
+import '../../domain/usecases/analyze_face_usecase.dart';
 import 'result_screen.dart';
 import 'home_screen.dart';
 
@@ -25,8 +25,7 @@ class LoadingScreen extends StatefulWidget {
 
 class _LoadingScreenState extends State<LoadingScreen>
     with SingleTickerProviderStateMixin {
-  final GeminiService _geminiService = GeminiService();
-  final StorageService _storageService = StorageService();
+  final AnalyzeFaceUseCase _analyzeFaceUseCase = di.analyzeFaceUseCase;
 
   late AnimationController _animationController;
   late List<int> _matrixStream;
@@ -71,30 +70,27 @@ class _LoadingScreenState extends State<LoadingScreen>
     }
   }
 
+  Future<void> _deleteImageFile() async {
+    try {
+      if (await widget.imageFile.exists()) {
+        await widget.imageFile.delete();
+        debugPrint('✅ 이미지가 안전하게 삭제되었습니다.');
+      }
+    } catch (e) {
+      debugPrint('파일 삭제 실패: $e');
+    }
+  }
+
   Future<void> _startAnalysis() async {
     try {
-      // 1. 먼저 얼굴인지 검증
-      final isFace = await _geminiService.validateFaceImage(widget.imageFile);
-
-      if (!isFace) {
-        // 얼굴이 아닌 경우 에러 처리
-        await _storageService.deleteFile(widget.imageFile);
-        if (mounted) {
-          setState(() {
-            _errorMessage = '사람 얼굴이 감지되지 않았습니다.\n얼굴이 잘 보이는 사진으로 다시 시도해주세요!';
-          });
-        }
-        return;
-      }
-
-      // 2. 얼굴 분석 진행
-      final result = await _geminiService.analyzeImage(
+      // UseCase로 분석 실행 (얼굴 검증 + 분석 포함)
+      final result = await _analyzeFaceUseCase.execute(
         widget.imageFile,
         seriousMode: widget.isSeriousMode,
       );
 
       // 분석 완료 후 이미지 삭제 (보안)
-      await _storageService.deleteFile(widget.imageFile);
+      await _deleteImageFile();
 
       if (mounted) {
         Navigator.pushReplacement(
@@ -113,8 +109,15 @@ class _LoadingScreenState extends State<LoadingScreen>
           ),
         );
       }
+    } on FaceValidationException catch (e) {
+      await _deleteImageFile();
+      if (mounted) {
+        setState(() {
+          _errorMessage = '${e.message}\n얼굴이 잘 보이는 사진으로 다시 시도해주세요!';
+        });
+      }
     } catch (e) {
-      await _storageService.deleteFile(widget.imageFile);
+      await _deleteImageFile();
       if (mounted) {
         setState(() {
           _errorMessage = 'AI 분석 중 오류가 발생했습니다.\n$e';

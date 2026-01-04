@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../config/app_theme.dart';
+import '../../core/config/app_theme.dart';
 
 /// 이미지 소스 선택 바텀시트
 class ImageSourceBottomSheet extends StatelessWidget {

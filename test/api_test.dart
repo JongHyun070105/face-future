@@ -1,8 +1,8 @@
 import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:flutter_face_future/services/gemini_service.dart';
-import 'package:flutter_face_future/config/app_config.dart';
+import 'package:flutter_face_future/core/config/app_config.dart';
+import 'package:flutter_face_future/data/datasources/gemini_remote_datasource.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
 
 void main() {
@@ -375,11 +375,17 @@ void main() {
     // 4. Call Gemini API with Image
     print('📡 Sending image request to Gemini API...');
 
-    final service = GeminiService();
-    service.initialize(); // Uses key from AppConfig
+    final dataSource = GeminiRemoteDataSource(
+      apiKey: AppConfig.geminiApiKey,
+      modelName: AppConfig.geminiModel,
+    );
+    dataSource.initialize();
 
     try {
-      final result = await service.analyzeImage(imageFile, seriousMode: false);
+      final result = await dataSource.analyzeImage(
+        imageFile,
+        seriousMode: false,
+      );
 
       print('white_check_mark API Call Successful!');
       print('-----------------------------------');

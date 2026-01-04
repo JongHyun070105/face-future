@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../config/app_theme.dart';
-import '../models/analysis_result.dart';
-import '../services/storage_service.dart';
+import '../../core/config/app_theme.dart';
+import '../../domain/entities/analysis_result_entity.dart';
+import '../../data/datasources/local_storage_datasource.dart';
 import 'home_screen.dart';
 
 /// 분석 결과 화면
 class ResultScreen extends StatefulWidget {
-  final AnalysisResult result;
+  final AnalysisResultEntity result;
   final bool isSeriousMode;
 
   const ResultScreen({
@@ -23,7 +23,7 @@ class ResultScreen extends StatefulWidget {
 
 class _ResultScreenState extends State<ResultScreen>
     with SingleTickerProviderStateMixin {
-  final StorageService _storageService = StorageService();
+  final LocalStorageDataSource _storageDataSource = LocalStorageDataSource();
   late AnimationController _controller;
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
@@ -59,7 +59,9 @@ class _ResultScreenState extends State<ResultScreen>
 
   Future<void> _saveResult() async {
     final resultCard = _buildResultCardForSave();
-    final success = await _storageService.captureAndSaveToGallery(resultCard);
+    final success = await _storageDataSource.captureAndSaveToGallery(
+      resultCard,
+    );
 
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(

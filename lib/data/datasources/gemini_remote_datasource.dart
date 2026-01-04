@@ -1,32 +1,36 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:google_generative_ai/google_generative_ai.dart';
-import '../config/app_config.dart';
-import '../models/analysis_result.dart';
+import '../models/analysis_result_model.dart';
 
-/// Gemini API 통신 서비스
-class GeminiService {
+/// Gemini API 원격 데이터소스
+class GeminiRemoteDataSource {
   late final GenerativeModel _model;
   late final GenerativeModel _validationModel;
   bool _isInitialized = false;
 
-  /// 서비스 초기화
+  final String apiKey;
+  final String modelName;
+
+  GeminiRemoteDataSource({required this.apiKey, required this.modelName});
+
+  /// 초기화
   void initialize() {
     if (_isInitialized) return;
 
     _model = GenerativeModel(
-      model: AppConfig.geminiModel,
-      apiKey: AppConfig.geminiApiKey,
+      model: modelName,
+      apiKey: apiKey,
       systemInstruction: Content.text(_systemPrompt),
       generationConfig: GenerationConfig(
         responseMimeType: 'application/json',
-        temperature: 1.0, // 더 다양한 결과를 위해 상향
+        temperature: 1.0,
       ),
     );
 
     _validationModel = GenerativeModel(
-      model: AppConfig.geminiModel,
-      apiKey: AppConfig.geminiApiKey,
+      model: modelName,
+      apiKey: apiKey,
       generationConfig: GenerationConfig(
         responseMimeType: 'application/json',
         temperature: 0.1,
@@ -36,8 +40,8 @@ class GeminiService {
     _isInitialized = true;
   }
 
-  /// 얼굴 이미지인지 검증
-  Future<bool> validateFaceImage(File imageFile) async {
+  /// 얼굴 이미지 검증
+  Future<bool> validateFace(File imageFile) async {
     if (!_isInitialized) initialize();
 
     final imageBytes = await imageFile.readAsBytes();
@@ -53,9 +57,7 @@ JSON 형식으로 답변해:
     final response = await _validationModel.generateContent([content]);
     final jsonText = response.text;
 
-    if (jsonText == null || jsonText.isEmpty) {
-      return false;
-    }
+    if (jsonText == null || jsonText.isEmpty) return false;
 
     try {
       final jsonData = jsonDecode(jsonText) as Map<String, dynamic>;
@@ -65,10 +67,10 @@ JSON 형식으로 답변해:
     }
   }
 
-  /// 얼굴 이미지 분석
-  Future<AnalysisResult> analyzeImage(
+  /// 얼굴 분석
+  Future<AnalysisResultModel> analyzeImage(
     File imageFile, {
-    bool seriousMode = false,
+    required bool seriousMode,
   }) async {
     if (!_isInitialized) initialize();
 
@@ -80,7 +82,6 @@ JSON 형식으로 답변해:
         : '이 얼굴 사진을 분석해줘! [재미 모드]로 분석해. 재미있고 특이한 직업을 추천해줘! (${DateTime.now().millisecondsSinceEpoch})';
 
     final content = Content.multi([TextPart(promptText), imagePart]);
-
     final response = await _model.generateContent([content]);
     final jsonText = response.text;
 
@@ -89,10 +90,9 @@ JSON 형식으로 답변해:
     }
 
     final jsonData = jsonDecode(jsonText) as Map<String, dynamic>;
-    return AnalysisResult.fromJson(jsonData);
+    return AnalysisResultModel.fromJson(jsonData);
   }
 
-  /// 시스템 프롬프트
   static const String _systemPrompt = '''
 너는 20년 경력의 용한 관상가이자 빅데이터 분석가야.
 
@@ -111,7 +111,7 @@ JSON 형식으로 답변해:
 [직업 추천 가이드 - 모드별 차별화 필수]
 1. 진지 모드 (Serious Mode):
    - 얼굴 특징을 깊이 분석하고, 그 특징에서 연상되는 직업을 창의적으로 도출해.
-   - 특정 분야에 편향되지 말고 모든 산업군을 고려해 (IT, 제조, 서비스, 예술, 의료, 교육, 기능직, 1차산업 등)
+   - 특정 분야에 편향되지 말고 모든 산업군을 고려해
    - 예시 목록에서 고르지 말고, 그 사람의 얼굴에서 느껴지는 인상에 맞는 직업을 직접 생각해내.
    - 연봉은 짧게 (예: '약 4,000만원')
    - 직업명은 20자 이내
@@ -149,7 +149,7 @@ JSON 형식으로 답변해:
     "luck": 1-100
   },
   "job_info": {
-    "description": "이 직업이 무엇을 하는지 구체적으로 설명 (2-3문장, 실제로 어떤 일을 하는지 중학생도 이해할 수 있게)",
+    "description": "이 직업이 무엇을 하는지 구체적으로 설명 (2-3문장)",
     "skills": ["역량1", "역량2", "역량3"],
     "departments": ["학과1", "학과2"]
   }

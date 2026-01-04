@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'config/app_theme.dart';
-import 'screens/home_screen.dart';
-import 'services/gemini_service.dart';
+import 'core/config/app_theme.dart';
+import 'core/di/injection_container.dart';
+import 'presentation/screens/home_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,8 +23,8 @@ void main() async {
     DeviceOrientation.portraitDown,
   ]);
 
-  // Gemini 서비스 초기화
-  GeminiService().initialize();
+  // DI 초기화 (Clean Architecture)
+  di.geminiDataSource.initialize();
 
   runApp(const FaceFutureApp());
 }
