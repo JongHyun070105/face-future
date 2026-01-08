@@ -71,11 +71,7 @@ class _HomeScreenState extends State<HomeScreen>
                   const SizedBox(height: 32),
                   // 메인 버튼
                   _buildMainButton(),
-                  const Spacer(flex: 1),
-                  // 하단 정보 버튼
-                  _buildInfoButton(),
-                  const SizedBox(height: 16),
-                  const Spacer(flex: 1),
+                  const Spacer(flex: 2),
                 ],
               ),
             ),
@@ -239,117 +235,6 @@ class _HomeScreenState extends State<HomeScreen>
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildInfoButton() {
-    return TextButton.icon(
-      onPressed: () => _showInfoDialog(),
-      icon: const Icon(Icons.info_outline, size: 18),
-      label: const Text('이 앱은 어떻게 작동하나요?'),
-      style: TextButton.styleFrom(foregroundColor: Colors.white60),
-    );
-  }
-
-  void _showInfoDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: const Color(AppTheme.surfaceColor),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text(
-          '📚 AI 관상 분석의 원리',
-          style: TextStyle(color: Color(AppTheme.secondaryColor)),
-        ),
-        content: const SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              _InfoStep(
-                number: '1️⃣',
-                title: '이미지 입력',
-                description: '당신의 얼굴 사진이 AI에게 전달됩니다.',
-              ),
-              SizedBox(height: 16),
-              _InfoStep(
-                number: '2️⃣',
-                title: '특징 추출 (Feature Extraction)',
-                description: 'AI가 눈, 코, 입의 위치와 모양, 표정을 분석합니다.',
-              ),
-              SizedBox(height: 16),
-              _InfoStep(
-                number: '3️⃣',
-                title: '패턴 매칭 (Pattern Matching)',
-                description: '수십억 개의 학습 데이터에서 유사한 패턴을 찾습니다.',
-              ),
-              SizedBox(height: 16),
-              _InfoStep(
-                number: '4️⃣',
-                title: '예측 (Prediction)',
-                description: '분석된 특징을 바탕으로 가장 어울리는 직업을 예측합니다.',
-              ),
-              SizedBox(height: 24),
-              Divider(color: Colors.white24),
-              SizedBox(height: 16),
-              Row(
-                children: [
-                  Icon(Icons.warning_amber, color: Colors.amber, size: 20),
-                  SizedBox(width: 8),
-                  Text('알아두세요!', style: TextStyle(fontWeight: FontWeight.bold)),
-                ],
-              ),
-              SizedBox(height: 8),
-              Text(
-                '이 결과는 재미를 위한 것이며, 실제 미래를 예측하는 것이 아닙니다. AI도 틀릴 수 있어요! (이것을 \'AI 환각\'이라고 해요)',
-                style: TextStyle(fontSize: 13, color: Colors.white70),
-              ),
-            ],
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('확인'),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _InfoStep extends StatelessWidget {
-  final String number;
-  final String title;
-  final String description;
-
-  const _InfoStep({
-    required this.number,
-    required this.title,
-    required this.description,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(number, style: const TextStyle(fontSize: 16)),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
-              const SizedBox(height: 4),
-              Text(
-                description,
-                style: const TextStyle(fontSize: 13, color: Colors.white70),
-              ),
-            ],
-          ),
-        ),
-      ],
     );
   }
 }
