@@ -121,7 +121,7 @@ class _HomeScreenState extends State<HomeScreen>
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
           color: isSelected
-              ? const Color(AppTheme.primaryColor).withOpacity(0.5)
+              ? const Color(AppTheme.primaryColor).withValues(alpha: 0.5)
               : Colors.transparent,
           borderRadius: BorderRadius.circular(12),
         ),
@@ -210,7 +210,7 @@ class _HomeScreenState extends State<HomeScreen>
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
-              color: const Color(AppTheme.primaryColor).withOpacity(0.4),
+              color: const Color(AppTheme.primaryColor).withValues(alpha: 0.4),
               blurRadius: 20,
               offset: const Offset(0, 8),
             ),

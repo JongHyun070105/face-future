@@ -77,7 +77,7 @@ class AppTheme {
     color: const Color(surfaceColor),
     borderRadius: BorderRadius.circular(24),
     // Dark mode requires subtle borders or lighter shadows for depth
-    border: Border.all(color: Colors.white.withOpacity(0.08), width: 1),
+    border: Border.all(color: Colors.white.withValues(alpha: 0.08), width: 1),
   );
 
   // Neon Glow - Empty for clean style
@@ -86,9 +86,9 @@ class AppTheme {
   // Glassmorphism - Adapted for Black Base
   static BoxDecoration glassmorphism({double opacity = 0.1}) {
     return BoxDecoration(
-      color: const Color(surfaceColor).withOpacity(0.8),
+      color: const Color(surfaceColor).withValues(alpha: 0.8),
       borderRadius: BorderRadius.circular(20),
-      border: Border.all(color: Colors.white.withOpacity(0.1), width: 1),
+      border: Border.all(color: Colors.white.withValues(alpha: 0.1), width: 1),
     );
   }
 }

@@ -269,7 +269,7 @@ class MatrixPainter extends CustomPainter {
         style: TextStyle(
           color: const Color(
             AppTheme.primaryColor,
-          ).withOpacity((y / size.height)),
+          ).withValues(alpha: (y / size.height)),
           fontSize: fontSize,
           fontWeight: FontWeight.bold,
         ),

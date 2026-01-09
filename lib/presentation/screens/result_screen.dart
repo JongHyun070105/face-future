@@ -262,10 +262,12 @@ class _ResultScreenState extends State<ResultScreen>
             // Result Card Content
             Container(
               decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.4),
+                color: Colors.black.withValues(alpha: 0.4),
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(
-                  color: const Color(AppTheme.primaryColor).withOpacity(0.3),
+                  color: const Color(
+                    AppTheme.primaryColor,
+                  ).withValues(alpha: 0.3),
                   width: 1,
                 ),
               ),
@@ -302,8 +304,12 @@ class _ResultScreenState extends State<ResultScreen>
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         colors: [
-                          const Color(AppTheme.primaryColor).withOpacity(0.8),
-                          const Color(AppTheme.primaryColor).withOpacity(0.5),
+                          const Color(
+                            AppTheme.primaryColor,
+                          ).withValues(alpha: 0.8),
+                          const Color(
+                            AppTheme.primaryColor,
+                          ).withValues(alpha: 0.5),
                         ],
                       ),
                       borderRadius: BorderRadius.circular(20),
@@ -323,7 +329,7 @@ class _ResultScreenState extends State<ResultScreen>
                     '"${widget.result.comment}"',
                     style: TextStyle(
                       fontSize: 14,
-                      color: Colors.white.withOpacity(0.85),
+                      color: Colors.white.withValues(alpha: 0.85),
                       height: 1.5,
                       fontStyle: FontStyle.italic,
                     ),
@@ -338,7 +344,7 @@ class _ResultScreenState extends State<ResultScreen>
               'AI 관상 분석 by Face Future',
               style: TextStyle(
                 fontSize: 11,
-                color: Colors.white.withOpacity(0.5),
+                color: Colors.white.withValues(alpha: 0.5),
                 letterSpacing: 0.5,
               ),
             ),
@@ -474,9 +480,9 @@ class _ResultScreenState extends State<ResultScreen>
                 },
                 dataSets: [
                   RadarDataSet(
-                    fillColor: const Color(AppTheme.primaryColor).withOpacity(
-                      0.2,
-                    ), // Fixed withValues to withOpacity for consistency
+                    fillColor: const Color(
+                      AppTheme.primaryColor,
+                    ).withValues(alpha: 0.2),
                     borderColor: const Color(AppTheme.primaryColor),
                     borderWidth: 2,
                     entryRadius: 4,

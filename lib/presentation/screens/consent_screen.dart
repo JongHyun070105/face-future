@@ -152,7 +152,9 @@ class _ConsentScreenState extends State<ConsentScreen> {
                     ),
                     decoration: BoxDecoration(
                       color: _isAgreed
-                          ? const Color(AppTheme.primaryColor).withOpacity(0.2)
+                          ? const Color(
+                              AppTheme.primaryColor,
+                            ).withValues(alpha: 0.2)
                           : Colors.transparent,
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
@@ -243,7 +245,7 @@ class _ConsentScreenState extends State<ConsentScreen> {
           width: 40,
           height: 40,
           decoration: BoxDecoration(
-            color: const Color(AppTheme.primaryColor).withOpacity(0.2),
+            color: const Color(AppTheme.primaryColor).withValues(alpha: 0.2),
             borderRadius: BorderRadius.circular(10),
           ),
           child: Icon(
