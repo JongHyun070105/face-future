@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_face_future/core/config/app_config.dart';
@@ -19,7 +20,7 @@ void main() {
 
     // Check if API Key is loaded
     final apiKey = AppConfig.geminiApiKey;
-    print(
+    debugPrint(
       '🔑 Loaded API Key: ${apiKey.isEmpty ? "EMPTY" : "${apiKey.substring(0, 5)}..."}',
     );
 
@@ -356,24 +357,24 @@ void main() {
     final tempDir = Directory.systemTemp.createTempSync();
     final imageFile = File('${tempDir.path}/test_image.jpg');
     await imageFile.writeAsBytes(minimalJpeg);
-    print('🖼 Test image created at: ${imageFile.path}');
+    debugPrint('🖼 Test image created at: ${imageFile.path}');
 
     // 3. Verify Model Availability (Text Only)
-    print('📡 Checking model availability (${AppConfig.geminiModel})...');
+    debugPrint('📡 Checking model availability (${AppConfig.geminiModel})...');
     final model = GenerativeModel(model: AppConfig.geminiModel, apiKey: apiKey);
     try {
       final response = await model.generateContent([Content.text('Hello')]);
-      print(
+      debugPrint(
         'white_check_mark Model is reachable! Response: ${response.text?.substring(0, 10)}...',
       );
     } catch (e) {
-      print('x Model check failed: $e');
+      debugPrint('x Model check failed: $e');
       // If text fails, likely the model ID is wrong
       fail('Model ${AppConfig.geminiModel} not available: $e');
     }
 
     // 4. Call Gemini API with Image
-    print('📡 Sending image request to Gemini API...');
+    debugPrint('📡 Sending image request to Gemini API...');
 
     final dataSource = GeminiRemoteDataSource(
       apiKey: AppConfig.geminiApiKey,
@@ -387,17 +388,17 @@ void main() {
         seriousMode: false,
       );
 
-      print('white_check_mark API Call Successful!');
-      print('-----------------------------------');
-      print('🏆 Job: ${result.job}');
-      print('💰 Salary: ${result.salary}');
-      print('📝 Comment: ${result.comment}');
-      print('-----------------------------------');
+      debugPrint('white_check_mark API Call Successful!');
+      debugPrint('-----------------------------------');
+      debugPrint('🏆 Job: ${result.job}');
+      debugPrint('💰 Salary: ${result.salary}');
+      debugPrint('📝 Comment: ${result.comment}');
+      debugPrint('-----------------------------------');
 
       expect(result.job, isNotEmpty);
       expect(result.salary, isNotEmpty);
     } catch (e) {
-      print('x API Call Failed: $e');
+      debugPrint('x API Call Failed: $e');
       fail('API call failed with error: $e');
     } finally {
       // Cleanup

@@ -42,6 +42,7 @@ class _ConsentScreenState extends State<ConsentScreen> {
         final prefs = await SharedPreferences.getInstance();
         await prefs.setBool('hasConsented', true);
 
+        if (!mounted) return;
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
