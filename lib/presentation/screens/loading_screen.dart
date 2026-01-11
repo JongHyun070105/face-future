@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import '../../core/config/app_theme.dart';
 import '../../core/di/injection_container.dart';
+import '../../data/datasources/gemini_remote_datasource.dart';
 import '../../domain/usecases/analyze_face_usecase.dart';
 import 'result_screen.dart';
 import 'home_screen.dart';
@@ -116,11 +117,32 @@ class _LoadingScreenState extends State<LoadingScreen>
           _errorMessage = '${e.message}\n얼굴이 잘 보이는 사진으로 다시 시도해주세요!';
         });
       }
+    } on NetworkException catch (e) {
+      await _deleteImageFile();
+      if (mounted) {
+        setState(() {
+          _errorMessage = '${e.message}\n와이파이 또는 데이터 연결을 확인해주세요.';
+        });
+      }
+    } on ServerException catch (e) {
+      await _deleteImageFile();
+      if (mounted) {
+        setState(() {
+          _errorMessage = '${e.message}\n잠시 후 다시 시도해주세요.';
+        });
+      }
+    } on ParsingException catch (e) {
+      await _deleteImageFile();
+      if (mounted) {
+        setState(() {
+          _errorMessage = '${e.message}\n다시 시도해주세요.';
+        });
+      }
     } catch (e) {
       await _deleteImageFile();
       if (mounted) {
         setState(() {
-          _errorMessage = 'AI 분석 중 오류가 발생했습니다.\n$e';
+          _errorMessage = '알 수 없는 오류가 발생했습니다.\n$e';
         });
       }
     }

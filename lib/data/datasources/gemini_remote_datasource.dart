@@ -1,7 +1,32 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:google_generative_ai/google_generative_ai.dart';
 import '../models/analysis_result_model.dart';
+
+/// 네트워크 예외
+class NetworkException implements Exception {
+  final String message;
+  const NetworkException(this.message);
+  @override
+  String toString() => message;
+}
+
+/// 서버 예외
+class ServerException implements Exception {
+  final String message;
+  const ServerException(this.message);
+  @override
+  String toString() => message;
+}
+
+/// 파싱 예외
+class ParsingException implements Exception {
+  final String message;
+  const ParsingException(this.message);
+  @override
+  String toString() => message;
+}
 
 /// Gemini API 원격 데이터소스
 class GeminiRemoteDataSource {
@@ -44,25 +69,36 @@ class GeminiRemoteDataSource {
   Future<bool> validateFace(File imageFile) async {
     if (!_isInitialized) initialize();
 
-    final imageBytes = await imageFile.readAsBytes();
-    final imagePart = DataPart('image/jpeg', imageBytes);
+    try {
+      final imageBytes = await imageFile.readAsBytes();
+      final imagePart = DataPart('image/jpeg', imageBytes);
 
-    const validationPrompt = '''
+      const validationPrompt = '''
 이 이미지에 사람의 얼굴이 있는지 확인해줘.
 JSON 형식으로 답변해:
 {"is_face": true/false, "reason": "이유"}
 ''';
 
-    final content = Content.multi([TextPart(validationPrompt), imagePart]);
-    final response = await _validationModel.generateContent([content]);
-    final jsonText = response.text;
+      final content = Content.multi([TextPart(validationPrompt), imagePart]);
+      final response = await _validationModel
+          .generateContent([content])
+          .timeout(const Duration(seconds: 30));
+      final jsonText = response.text;
 
-    if (jsonText == null || jsonText.isEmpty) return false;
+      if (jsonText == null || jsonText.isEmpty) return false;
 
-    try {
-      final jsonData = jsonDecode(jsonText) as Map<String, dynamic>;
-      return jsonData['is_face'] == true;
+      try {
+        final jsonData = jsonDecode(jsonText) as Map<String, dynamic>;
+        return jsonData['is_face'] == true;
+      } catch (e) {
+        return false;
+      }
+    } on SocketException {
+      throw const NetworkException('인터넷 연결을 확인해주세요.');
+    } on TimeoutException {
+      throw const ServerException('서버 응답 시간이 초과되었습니다.');
     } catch (e) {
+      // 기타 오류는 false 반환
       return false;
     }
   }
@@ -74,23 +110,41 @@ JSON 형식으로 답변해:
   }) async {
     if (!_isInitialized) initialize();
 
-    final imageBytes = await imageFile.readAsBytes();
-    final imagePart = DataPart('image/jpeg', imageBytes);
+    try {
+      final imageBytes = await imageFile.readAsBytes();
+      final imagePart = DataPart('image/jpeg', imageBytes);
 
-    final promptText = seriousMode
-        ? '이 얼굴 사진을 분석해줘. [진지 모드]로 분석해. 다양한 직업군에서 이 사람에게 어울리는 직업을 추천해. 매번 다른 직업을 추천해줘. (${DateTime.now().millisecondsSinceEpoch})'
-        : '이 얼굴 사진을 분석해줘! [재미 모드]로 분석해. 재미있고 특이한 직업을 추천해줘! (${DateTime.now().millisecondsSinceEpoch})';
+      final promptText = seriousMode
+          ? '이 얼굴 사진을 분석해줘. [진지 모드]로 분석해. 다양한 직업군에서 이 사람에게 어울리는 직업을 추천해. 매번 다른 직업을 추천해줘. (${DateTime.now().millisecondsSinceEpoch})'
+          : '이 얼굴 사진을 분석해줘! [재미 모드]로 분석해. 재미있고 특이한 직업을 추천해줘! (${DateTime.now().millisecondsSinceEpoch})';
 
-    final content = Content.multi([TextPart(promptText), imagePart]);
-    final response = await _model.generateContent([content]);
-    final jsonText = response.text;
+      final content = Content.multi([TextPart(promptText), imagePart]);
+      final response = await _model
+          .generateContent([content])
+          .timeout(const Duration(seconds: 60));
+      final jsonText = response.text;
 
-    if (jsonText == null || jsonText.isEmpty) {
-      throw Exception('AI 응답이 비어있습니다');
+      if (jsonText == null || jsonText.isEmpty) {
+        throw const ServerException('AI 응답이 비어있습니다.');
+      }
+
+      try {
+        final jsonData = jsonDecode(jsonText) as Map<String, dynamic>;
+        return AnalysisResultModel.fromJson(jsonData);
+      } on FormatException catch (e) {
+        throw ParsingException('JSON 파싱 실패: ${e.message}');
+      }
+    } on SocketException {
+      throw const NetworkException('인터넷 연결을 확인해주세요.');
+    } on TimeoutException {
+      throw const ServerException('서버 응답 시간이 초과되었습니다.');
+    } on ServerException {
+      rethrow;
+    } on ParsingException {
+      rethrow;
+    } catch (e) {
+      throw ServerException('AI 분석 중 오류: $e');
     }
-
-    final jsonData = jsonDecode(jsonText) as Map<String, dynamic>;
-    return AnalysisResultModel.fromJson(jsonData);
   }
 
   static const String _systemPrompt = '''
