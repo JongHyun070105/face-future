@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import '../../core/config/app_theme.dart';
 import '../../core/di/injection_container.dart';
 import '../../data/datasources/gemini_remote_datasource.dart';
+import '../../data/models/analysis_result_model.dart';
+import '../../domain/entities/analysis_result_entity.dart';
 import '../../domain/usecases/analyze_face_usecase.dart';
 import 'result_screen.dart';
 import 'home_screen.dart';
@@ -82,6 +84,16 @@ class _LoadingScreenState extends State<LoadingScreen>
     }
   }
 
+  Future<void> _saveToHistory(AnalysisResultEntity result) async {
+    try {
+      final model = AnalysisResultModel.fromEntity(result);
+      await di.historyDataSource.addToHistory(model, widget.isSeriousMode);
+      debugPrint('✅ 히스토리에 저장되었습니다.');
+    } catch (e) {
+      debugPrint('히스토리 저장 실패: $e');
+    }
+  }
+
   Future<void> _startAnalysis() async {
     try {
       // UseCase로 분석 실행 (얼굴 검증 + 분석 포함)
@@ -89,6 +101,9 @@ class _LoadingScreenState extends State<LoadingScreen>
         widget.imageFile,
         seriousMode: widget.isSeriousMode,
       );
+
+      // 히스토리에 자동 저장
+      await _saveToHistory(result);
 
       // 분석 완료 후 이미지 삭제 (보안)
       await _deleteImageFile();

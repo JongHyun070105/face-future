@@ -6,6 +6,7 @@ import '../../core/config/app_config.dart';
 import '../../core/config/app_theme.dart';
 import '../widgets/common_widgets.dart';
 import 'consent_screen.dart';
+import 'history_screen.dart';
 import 'loading_screen.dart';
 
 /// 메인 홈 화면
@@ -71,6 +72,9 @@ class _HomeScreenState extends State<HomeScreen>
                   const SizedBox(height: 32),
                   // 메인 버튼
                   _buildMainButton(),
+                  const SizedBox(height: 16),
+                  // 히스토리 버튼
+                  _buildHistoryButton(),
                   const Spacer(flex: 2),
                 ],
               ),
@@ -235,6 +239,19 @@ class _HomeScreenState extends State<HomeScreen>
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildHistoryButton() {
+    return TextButton.icon(
+      onPressed: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const HistoryScreen()),
+        );
+      },
+      icon: const Icon(Icons.history, size: 18, color: Colors.white60),
+      label: const Text('분석 히스토리 보기', style: TextStyle(color: Colors.white60)),
     );
   }
 }

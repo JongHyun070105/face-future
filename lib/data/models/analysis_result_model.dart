@@ -30,6 +30,18 @@ class AnalysisResultModel {
     );
   }
 
+  /// 엔티티에서 모델 생성 (히스토리 저장용)
+  factory AnalysisResultModel.fromEntity(AnalysisResultEntity entity) {
+    return AnalysisResultModel(
+      job: entity.job,
+      salary: entity.salary,
+      comment: entity.comment,
+      features: FaceFeaturesModel.fromEntity(entity.features),
+      stats: StatsModel.fromEntity(entity.stats),
+      jobInfo: JobInfoModel.fromEntity(entity.jobInfo),
+    );
+  }
+
   /// 모델을 엔티티로 변환
   AnalysisResultEntity toEntity() {
     return AnalysisResultEntity(
@@ -68,6 +80,15 @@ class FaceFeaturesModel {
 
   FaceFeaturesEntity toEntity() {
     return FaceFeaturesEntity(eyes: eyes, nose: nose, mouth: mouth, vibe: vibe);
+  }
+
+  factory FaceFeaturesModel.fromEntity(FaceFeaturesEntity entity) {
+    return FaceFeaturesModel(
+      eyes: entity.eyes,
+      nose: entity.nose,
+      mouth: entity.mouth,
+      vibe: entity.vibe,
+    );
   }
 }
 
@@ -110,6 +131,17 @@ class StatsModel {
       luck: luck,
     );
   }
+
+  factory StatsModel.fromEntity(StatsEntity entity) {
+    return StatsModel(
+      creativity: entity.creativity,
+      analysis: entity.analysis,
+      leadership: entity.leadership,
+      communication: entity.communication,
+      stamina: entity.stamina,
+      luck: entity.luck,
+    );
+  }
 }
 
 /// 직업 정보 모델
@@ -137,6 +169,14 @@ class JobInfoModel {
       description: description,
       skills: skills,
       departments: departments,
+    );
+  }
+
+  factory JobInfoModel.fromEntity(JobInfoEntity entity) {
+    return JobInfoModel(
+      description: entity.description,
+      skills: List<String>.from(entity.skills),
+      departments: List<String>.from(entity.departments),
     );
   }
 }

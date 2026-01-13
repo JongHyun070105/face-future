@@ -1,4 +1,5 @@
 import '../../data/datasources/gemini_remote_datasource.dart';
+import '../../data/datasources/history_local_datasource.dart';
 import '../../data/repositories/face_analysis_repository_impl.dart';
 import '../../domain/repositories/face_analysis_repository.dart';
 import '../../domain/usecases/analyze_face_usecase.dart';
@@ -14,6 +15,7 @@ class DependencyInjection {
   GeminiRemoteDataSource? _geminiDataSource;
   FaceAnalysisRepository? _faceAnalysisRepository;
   AnalyzeFaceUseCase? _analyzeFaceUseCase;
+  HistoryLocalDataSource? _historyDataSource;
 
   /// Gemini DataSource
   GeminiRemoteDataSource get geminiDataSource {
@@ -38,11 +40,18 @@ class DependencyInjection {
     return _analyzeFaceUseCase!;
   }
 
+  /// History DataSource
+  HistoryLocalDataSource get historyDataSource {
+    _historyDataSource ??= HistoryLocalDataSource();
+    return _historyDataSource!;
+  }
+
   /// 리셋 (테스트용)
   void reset() {
     _geminiDataSource = null;
     _faceAnalysisRepository = null;
     _analyzeFaceUseCase = null;
+    _historyDataSource = null;
   }
 }
 
