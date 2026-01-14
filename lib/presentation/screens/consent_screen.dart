@@ -68,7 +68,7 @@ class _ConsentScreenState extends State<ConsentScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        decoration: AppTheme.gradientBackground,
+        decoration: AppTheme.gradientBackground(context),
         child: SafeArea(
           child: Padding(
             padding: const EdgeInsets.all(24),

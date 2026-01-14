@@ -72,7 +72,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        decoration: AppTheme.gradientBackground,
+        decoration: AppTheme.gradientBackground(context),
         child: SafeArea(
           child: Column(
             children: [

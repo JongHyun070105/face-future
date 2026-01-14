@@ -117,7 +117,7 @@ class _ResultScreenState extends State<ResultScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        decoration: AppTheme.gradientBackground,
+        decoration: AppTheme.gradientBackground(context),
         child: SafeArea(
           child: FadeTransition(
             opacity: _fadeAnimation,

@@ -8,6 +8,7 @@ import '../widgets/common_widgets.dart';
 import 'consent_screen.dart';
 import 'history_screen.dart';
 import 'loading_screen.dart';
+import 'settings_screen.dart';
 
 /// 메인 홈 화면
 class HomeScreen extends StatefulWidget {
@@ -46,7 +47,7 @@ class _HomeScreenState extends State<HomeScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        decoration: AppTheme.gradientBackground,
+        decoration: AppTheme.gradientBackground(context),
         child: SafeArea(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -54,7 +55,27 @@ class _HomeScreenState extends State<HomeScreen>
               width: double.infinity,
               child: Column(
                 children: [
-                  const Spacer(flex: 2),
+                  // 설정 버튼
+                  Align(
+                    alignment: Alignment.topRight,
+                    child: IconButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const SettingsScreen(),
+                          ),
+                        );
+                      },
+                      icon: Icon(
+                        Icons.settings,
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.white60
+                            : Colors.black54,
+                      ),
+                    ),
+                  ),
+                  const Spacer(flex: 1),
                   // 로고 및 타이틀
                   _buildTitle(),
                   const SizedBox(height: 16),
